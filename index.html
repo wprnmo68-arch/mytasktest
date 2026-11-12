@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Task - 25 Menit</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+    body {
+      background: #121212; color: #fff;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; padding: 20px;
+    }
+    .card {
+      background: #1e1e1e; padding: 30px; border-radius: 16px;
+      width: 100%; max-width: 360px; text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    h1 { font-size: 1.4rem; margin-bottom: 16px; color: #ff6b4a; }
+    input {
+      width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333;
+      background: #2a2a2a; color: #fff; font-size: 1rem; margin-bottom: 20px;
+      text-align: center; outline: none;
+    }
+    input:focus { border-color: #ff6b4a; }
+    .timer { font-size: 4.5rem; font-weight: bold; margin: 10px 0 25px; letter-spacing: 2px; }
+    .buttons { display: flex; gap: 10px; justify-content: center; }
+    button {
+      flex: 1; padding: 12px; border: none; border-radius: 8px;
+      font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+    }
+    #startBtn { background: #ff6b4a; color: #fff; }
+    #startBtn:hover { background: #e55a3b; }
+    #resetBtn { background: #333; color: #ddd; }
+    #resetBtn:hover { background: #444; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>My Task</h1>
+    <input type="text" id="taskInput" placeholder="Ketik nama tugasmu di sini...">
+    <div class="timer" id="display">25:00</div>
+    <div class="buttons">
+      <button id="startBtn">Mulai</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+  </div>
+
+  <script>
+    let time = 25 * 60; // 25 menit dalam detik
+    let timer = null;
+
+    const display = document.getElementById('display');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const taskInput = document.getElementById('taskInput');
+
+    // Simpan otomatis nama tugas di browser
+    taskInput.value = localStorage.getItem('myTaskName') || '';
+    taskInput.addEventListener('input', () => localStorage.setItem('myTaskName', taskInput.value));
+
+    function updateDisplay() {
+      const m = String(Math.floor(time / 60)).padStart(2, '0');
+      const s = String(time % 60).padStart(2, '0');
+      display.textContent = `${m}:${s}`;
+      document.title = `${m}:${s} - My Task`;
+    }
+
+    startBtn.addEventListener('click', () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+        startBtn.textContent = 'Lanjut';
+      } else {
+        startBtn.textContent = 'Jeda';
+        timer = setInterval(() => {
+          if (time > 0) {
+            time--;
+            updateDisplay();
+          } else {
+            clearInterval(timer);
+            timer = null;
+            startBtn.textContent = 'Mulai';
+            alert(`Waktu habis! Tugas "${taskInput.value || 'Fokus 25 Menit'}" selesai.`);
+          }
+        }, 1000);
+      }
+    });
+
+    resetBtn.addEventListener('click', () => {
+      clearInterval(timer);
+      timer = null;
+      time = 25 * 60;
+      startBtn.textContent = 'Mulai';
+      updateDisplay();
+    });
+  </script>
+
+</body>
+</html>
